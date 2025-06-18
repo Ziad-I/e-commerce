@@ -35,9 +35,11 @@ class Settings(BaseSettings):
     LOG_LEVEL: LogLevel = LogLevel.INFO
 
     # Security settings
+    ACCESS_TOKEN_ALGORITHM: str = "HS256"
     RESET_PASSWORD_TOKEN_SECRET: str = secrets.token_urlsafe(32)
     VERIFICATION_TOKEN_SECRET: str = secrets.token_urlsafe(32)
     ACCESS_TOKEN_SECRET: str = secrets.token_urlsafe(32)
+    REFRESH_TOKEN_SECRET: str = secrets.token_urlsafe(32)
 
     # MongoDB settings
     MONGODB_SCHEME: str
