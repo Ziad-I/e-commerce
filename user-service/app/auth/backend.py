@@ -12,6 +12,7 @@ from fastapi_users.authentication.transport import TransportLogoutNotSupportedEr
 
 from app.auth.transport import BearerTransportRefresh
 from app.auth.strategy import get_jwt_strategy, get_refresh_jwt_strategy
+from app.core.config import settings
 
 
 class AuthenticationBackendRefresh(
@@ -101,7 +102,9 @@ class AuthenticationBackendRefresh(
         return response
 
 
-bearer_transport_refresh = BearerTransportRefresh(tokenUrl="auth/jwt/refresh")
+bearer_transport_refresh = BearerTransportRefresh(
+    tokenUrl=f"{settings.API_V1_STR}/auth/login"
+)
 
 auth_backend_refresh = AuthenticationBackendRefresh(
     name="jwt",
