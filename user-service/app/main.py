@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logger import configure_logging
 from app.lifespan import lifespan
+from app.api.router import v1_router
 
 
 def get_app() -> FastAPI:
@@ -12,6 +13,7 @@ def get_app() -> FastAPI:
     app = FastAPI(
         title=settings.PROJECT_NAME,
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
+        lifespan=lifespan,
     )
 
     app.add_middleware(
@@ -22,6 +24,7 @@ def get_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    app.include_router(v1_router, prefix=settings.API_V1_STR)
     return app
 
 
