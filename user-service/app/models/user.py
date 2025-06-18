@@ -1,26 +1,25 @@
 from datetime import datetime
 from typing import List
-from beanie import Document, Link, BackLink, PydanticObjectId
+from beanie import Document, PydanticObjectId, after_event, Replace, Update
 from pydantic import Field, model_validator
-from fastapi_users.db import BeanieBaseUser, BeanieUserDatabase
+from fastapi_users.db import BeanieBaseUser
 
 
 class User(BeanieBaseUser, Document):
-    # name: str = Field(..., description="The user's full name")
-    # surname: str = Field(..., description="The user's surname")
-    # phone: str = Field(..., description="The user's phone number")
+    name: str = Field(..., description="The user's full name")
+    surname: str = Field(..., description="The user's surname")
+    phone: str = Field(..., description="The user's phone number")
 
-    # created_at: datetime = Field(
-    #     default_factory=datetime.now, description="Creation timestamp"
-    # )
-    # updated_at: datetime = Field(
-    #     default_factory=datetime.now, description="Last update timestamp"
-    # )
+    created_at: datetime = Field(
+        default_factory=datetime.now, description="Creation timestamp"
+    )
+    updated_at: datetime = Field(
+        default_factory=datetime.now, description="Last update timestamp"
+    )
 
-    # @model_validator(mode="after")
-    # def update_timestamp(cls, values):
-    #     values["updated_at"] = datetime.now()
-    #     return values
+    @after_event(Replace, Update)
+    def update_timestamp(self):
+        self.updated_at = datetime.now()
 
     class Config:
         json_encoders = {PydanticObjectId: str}
