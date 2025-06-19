@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package notification;
+
+import "google/protobuf/struct.proto";
+
+service NotificationService {
+    rpc SendEmail(SendEmailRequest) returns (SendEmailResponse);
+}
+
+message SendEmailRequest {
+    string to = 1;
+    EmailType type = 2;
+    map<string, string> metadata = 3;
+}
+
+message SendEmailResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+enum EmailType {
+    EMAIL_TYPE_UNSPECIFIED = 0;
+    EMAIL_TYPE_WELCOME = 1;
+    EMAIL_TYPE_PASSWORD_RESET = 2;
+    EMAIL_TYPE_VERIFY = 3;
+    EMAIL_TYPE_NOTIFICATION = 4;
+}
+
+

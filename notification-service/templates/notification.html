@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333333;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .email-body h1 {
+            font-size: 22px;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+        .email-body p {
+            margin: 10px 0;
+        }
+        .order-details {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        .email-footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #666666;
+            font-size: 12px;
+        }
+        .email-footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .email-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            Your E-Commerce Order
+        </div>
+        <div class="email-body">
+            <h1>Order Confirmation</h1>
+            <p>Hi {{ name }},</p>
+            <p>Thank you for your order. We've received it and are getting it ready for shipment.</p>
+            <div class="order-details">
+                <p><strong>Order ID:</strong> {{ order_id }}</p>
+                <p><strong>Order Total:</strong> ${{ total_price }}</p>
+                <p><strong>Shipping Address:</strong> {{ shipping_address }}</p>
+            </div>
+            <p>Cheers,<br>The E-Commerce Team</p>
+        </div>
+        <div class="email-footer">
+            <p>&copy; 2025 E-Commerce. All rights reserved.</p>
+            <p><a href="example.com">Visit our website</a></p>
+        </div>
+    </div>
+</body>
+</html>
