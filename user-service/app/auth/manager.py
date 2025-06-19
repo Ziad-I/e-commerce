@@ -11,7 +11,11 @@ from app.models.user import User
 
 class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
     reset_password_token_secret = settings.RESET_PASSWORD_TOKEN_SECRET
+    reset_password_token_lifetime_seconds = (
+        settings.RESET_PASSWORD_TOKEN_LIFETIME_SECONDS
+    )
     verification_token_secret = settings.VERIFICATION_TOKEN_SECRET
+    verification_token_lifetime_seconds = settings.VERIFICATION_TOKEN_LIFETIME_SECONDS
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         logger.info(f"User {user.id} has registered.")

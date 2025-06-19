@@ -3,8 +3,14 @@ from app.core.config import settings
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=settings.ACCESS_TOKEN_SECRET, lifetime_seconds=3600)
+    return JWTStrategy(
+        secret=settings.ACCESS_TOKEN_SECRET,
+        lifetime_seconds=settings.ACCESS_TOKEN_LIFETIME_SECONDS,
+    )
 
 
 def get_refresh_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=settings.REFRESH_TOKEN_SECRET, lifetime_seconds=259200)
+    return JWTStrategy(
+        secret=settings.REFRESH_TOKEN_SECRET,
+        lifetime_seconds=settings.REFRESH_TOKEN_LIFETIME_SECONDS,
+    )

@@ -36,10 +36,14 @@ class Settings(BaseSettings):
 
     # Security settings
     ACCESS_TOKEN_ALGORITHM: str = "HS256"
-    RESET_PASSWORD_TOKEN_SECRET: str = secrets.token_urlsafe(32)
-    VERIFICATION_TOKEN_SECRET: str = secrets.token_urlsafe(32)
     ACCESS_TOKEN_SECRET: str = secrets.token_urlsafe(32)
+    ACCESS_TOKEN_LIFETIME_SECONDS: int = 3600  # 1 hour
     REFRESH_TOKEN_SECRET: str = secrets.token_urlsafe(32)
+    REFRESH_TOKEN_LIFETIME_SECONDS: int = 3600 * 24 * 3  #  3 days
+    RESET_PASSWORD_TOKEN_SECRET: str = secrets.token_urlsafe(32)
+    RESET_PASSWORD_TOKEN_LIFETIME_SECONDS: int = 3600  # 1 hour
+    VERIFICATION_TOKEN_SECRET: str = secrets.token_urlsafe(32)
+    VERIFICATION_TOKEN_LIFETIME_SECONDS: int = 3600 * 24  # 1 day
 
     # MongoDB settings
     MONGODB_SCHEME: str
