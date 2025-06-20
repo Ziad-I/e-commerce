@@ -7,6 +7,8 @@ from fastapi_users.db import ObjectIDIDMixin
 
 from app.core.config import settings
 from app.models.user import User
+from app.core.grpc_client import get_grpc_client
+from app.proto import notification_pb2
 
 
 class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
@@ -23,21 +25,51 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
     async def on_after_forgot_password(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        logger.info(f"User {user.id} has forgot their password. Reset token: {token}")
+        logger.info(f"User {user.id} has requested a password reset. sending email…")
+        try:
+            email_req = notification_pb2.SendEmailRequest(
+                to=user.email,
+                type=notification_pb2.EmailType.EMAIL_TYPE_RESET_PASSWORD,
+                metadata={
+                    "link": settings.FRONTEND_URL + f"/reset-password?token={token}",
+                    "lifetime": "24 hours",
+                },
+            )
+            resp = await get_grpc_client().send_email(email_req)
+            if resp.success:
+                logger.info(f"Password reset email sent to {user.id}.")
+            else:
+                logger.error(f"Failed to send reset password email: {resp.error}")
+        except Exception as e:
+            logger.error(f"Failed to send password reset email: {e}")
 
     async def on_after_reset_password(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        logger.info(f"User {user.id} has reset their password. Reset token: {token}")
+        logger.info(f"User {user.id} has reset their password.")
 
     async def on_after_request_verify(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        logger.info(
-            f"Verification requested for user {user.id}. Verification token: {token}"
-        )
+        logger.info(f"User {user.id} has requested email verification. sending email…")
+        try:
+            email_req = notification_pb2.SendEmailRequest(
+                to=user.email,
+                type=notification_pb2.EmailType.EMAIL_TYPE_VERIFY,
+                metadata={
+                    "link": settings.FRONTEND_URL + f"/verify-email?token={token}",
+                    "lifetime": "24 hours",
+                },
+            )
+            resp = await get_grpc_client().send_email(email_req)
+            if resp.success:
+                logger.info(f"Verification email sent to {user.id}.")
+            else:
+                logger.error(f"Failed to send verification email: {resp.error}")
+        except Exception as e:
+            logger.error(f"Failed to send verification email: {e}")
 
     async def on_after_verify(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        logger.info(f"User {user.id} has been verified. Verification token: {token}")
+        logger.info(f"User {user.id} has been verified.")

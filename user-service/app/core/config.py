@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     APP_ENV: str = "development"
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "User Service"
+    FRONTEND_URL: str = "http://localhost:5678"
 
     # Logging settings
     LOG_LEVEL: LogLevel = LogLevel.INFO
@@ -44,6 +45,10 @@ class Settings(BaseSettings):
     RESET_PASSWORD_TOKEN_LIFETIME_SECONDS: int = 3600  # 1 hour
     VERIFICATION_TOKEN_SECRET: str = secrets.token_urlsafe(32)
     VERIFICATION_TOKEN_LIFETIME_SECONDS: int = 3600 * 24  # 1 day
+
+    # GRPC settings
+    GRPC_HOST: str = "localhost"
+    GRPC_PORT: int = 50051
 
     # MongoDB settings
     MONGODB_SCHEME: str
