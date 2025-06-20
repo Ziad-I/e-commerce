@@ -82,8 +82,9 @@ def serve():
         NotificationService(), server
     )
     port = settings.GRPC_PORT
-    server.add_insecure_port(f"[::]:{port}")
-    logger.info(f"gRPC email service listening on 0.0.0.0:{port}")
+    host = settings.GRPC_HOST
+    server.add_insecure_port(f"{host}:{port}")
+    logger.info(f"gRPC email service listening on {host}:{port}")
     server.start()
     server.wait_for_termination()
 
