@@ -1,3 +1,4 @@
+import asyncio
 from typing import Optional
 from loguru import logger
 from beanie import PydanticObjectId
@@ -29,17 +30,13 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
         try:
             email_req = notification_pb2.SendEmailRequest(
                 to=user.email,
-                type=notification_pb2.EmailType.EMAIL_TYPE_RESET_PASSWORD,
+                type=notification_pb2.EmailType.EMAIL_TYPE_PASSWORD_RESET,
                 metadata={
                     "link": settings.FRONTEND_URL + f"/reset-password?token={token}",
-                    "lifetime": "24 hours",
+                    "lifetime": "1 hour",
                 },
             )
-            resp = await get_grpc_client().send_email(email_req)
-            if resp.success:
-                logger.info(f"Password reset email sent to {user.id}.")
-            else:
-                logger.error(f"Failed to send reset password email: {resp.error}")
+            asyncio.create_task(get_grpc_client().send_email(email_req))
         except Exception as e:
             logger.error(f"Failed to send password reset email: {e}")
 
@@ -61,11 +58,7 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
                     "lifetime": "24 hours",
                 },
             )
-            resp = await get_grpc_client().send_email(email_req)
-            if resp.success:
-                logger.info(f"Verification email sent to {user.id}.")
-            else:
-                logger.error(f"Failed to send verification email: {resp.error}")
+            asyncio.create_task(get_grpc_client().send_email(email_req))
         except Exception as e:
             logger.error(f"Failed to send verification email: {e}")
 

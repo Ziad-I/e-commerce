@@ -21,9 +21,16 @@ class GrpcClient:
         """Send an email using the notification service."""
         try:
             response = await self._notification_stub.SendEmail(email_request)
+            if response.success:
+                logger.info(f"Email sent successfully to {email_request.to}.")
+            else:
+                logger.error(f"Failed to send email: {response.error}")
             return response
         except grpc.RpcError as e:
             logger.error(f"GRPC error: {e.code()} - {e.details()}")
+            return notification_pb2.SendEmailResponse(success=False, error=str(e))
+        except Exception as e:
+            logger.error(f"Unexpected error while sending email: {e}")
             return notification_pb2.SendEmailResponse(success=False, error=str(e))
 
     async def close(self):
