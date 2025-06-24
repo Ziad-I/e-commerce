@@ -3,8 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 
 from app.core.config import settings
-
-# from app.models import
+from app.models import Product
 
 
 async def init_db(app: FastAPI) -> None:
@@ -20,7 +19,7 @@ async def init_db(app: FastAPI) -> None:
 
     await init_beanie(
         database=client.get_default_database(),
-        document_models=[],  # list all your Document classes here
+        document_models=[Product],  # list all your Document classes here
     )
 
     app.state.mongo_client = client
