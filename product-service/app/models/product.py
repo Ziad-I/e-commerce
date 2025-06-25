@@ -1,9 +1,9 @@
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import Field
 from beanie import Document, PydanticObjectId
 
 
-class Product(BaseModel, Document):
+class Product(Document):
     name: str = Field(..., description="Name of the product")
     description: Optional[str] = Field(..., description="Description of the product")
     price: float = Field(..., description="Price of the product")
