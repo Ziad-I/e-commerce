@@ -3,8 +3,8 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from app.core.database import close_db, init_db
-from app.core.redis import close_redis, init_redis
-from app.core.rabbitmq import close_rabbitmq, init_rabbitmq
+from app.redis.lifespan import close_redis, init_redis
+from app.rabbitmq.lifespan import close_rabbitmq, init_rabbitmq
 
 
 @asynccontextmanager

@@ -50,6 +50,7 @@ class Settings(BaseSettings):
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
     REDIS_PASSWORD: Optional[str] = None
+    REDIS_CACHE_EXPIRE: Optional[int] = 3600
 
     # RabbitMQ settings
     RABBITMQ_HOST: str = "localhost"
@@ -58,6 +59,7 @@ class Settings(BaseSettings):
     RABBITMQ_PASSWORD: str = "guest"
     RABBITMQ_VHOST: str = "/"
     RABBITMQ_URI: Optional[URL] = None
+    RABBITMQ_EXCHANGE_NAME: str = "product_exchange"
 
     model_config = SettingsConfigDict(env_file=".env")
 

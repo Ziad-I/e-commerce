@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Request
-from redis.asyncio import ConnectionPool, Redis
+from fastapi import FastAPI
+from redis.asyncio import Redis
 
 from app.core.config import settings
 
