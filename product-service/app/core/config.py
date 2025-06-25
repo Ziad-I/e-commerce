@@ -42,10 +42,10 @@ class Settings(BaseSettings):
     MONGODB_HOST: str = "localhost"
     MONGODB_PORT: Optional[int] = 27017
     MONGODB_DB: str
-    MONGODB_URI: Optional[URL] = None
+    MONGODB_URI: Optional[str] = None
 
     # Redis settings
-    REDIS_URL: Optional[URL] = None
+    REDIS_URL: Optional[str] = None
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     RABBITMQ_USER: str = "guest"
     RABBITMQ_PASSWORD: str = "guest"
     RABBITMQ_VHOST: str = "/"
-    RABBITMQ_URI: Optional[URL] = None
+    RABBITMQ_URI: Optional[str] = None
     RABBITMQ_EXCHANGE_NAME: str = "product_exchange"
 
     model_config = SettingsConfigDict(env_file=".env")
