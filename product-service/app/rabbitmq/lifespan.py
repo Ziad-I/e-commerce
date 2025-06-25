@@ -7,7 +7,7 @@ from aio_pika.pool import Pool
 from app.core.config import settings
 
 
-def init_rabbitmq(app: FastAPI) -> None:
+async def init_rabbitmq(app: FastAPI) -> None:
     """
     Initialize rabbitmq pools.
 
