@@ -19,7 +19,7 @@ async def get_products_by_category(
     return products
 
 
-async def get_product_by_id(product_id: int) -> Optional[Product]:
+async def get_product_by_id(product_id: str) -> Optional[Product]:
     """Retrieve a product by its ID from the database."""
     product = await Product.get(product_id)
     if not product:
@@ -34,7 +34,7 @@ async def create_product(product: ProductCreate) -> Product:
     return new_product
 
 
-async def update_product(product_id: int, product: ProductUpdate) -> Optional[Product]:
+async def update_product(product_id: str, product: ProductUpdate) -> Optional[Product]:
     """Update an existing product in the database."""
     existing_product = await Product.get(product_id)
     if not existing_product:
@@ -47,7 +47,7 @@ async def update_product(product_id: int, product: ProductUpdate) -> Optional[Pr
     return existing_product
 
 
-async def delete_product(product_id: int) -> Optional[Product]:
+async def delete_product(product_id: str) -> Optional[Product]:
     """Delete a product from the database."""
     existing_product = await Product.get(product_id)
     if not existing_product:
