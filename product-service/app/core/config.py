@@ -61,6 +61,10 @@ class Settings(BaseSettings):
     RABBITMQ_URI: Optional[str] = None
     RABBITMQ_EXCHANGE_NAME: str = "product_exchange"
 
+    # Price Service settings
+    PRICE_SERVICE_GRPC_HOST: str = "localhost"
+    PRICE_SERVICE_GRPC_PORT: int = 50052
+
     model_config = SettingsConfigDict(env_file=".env")
 
     @property
@@ -127,7 +131,7 @@ class Settings(BaseSettings):
             password=self.RABBITMQ_PASSWORD,
             host=self.RABBITMQ_HOST,
             port=self.RABBITMQ_PORT,
-            path=self.RABBITMQ_VHOST,
+            path=f"/{self.RABBITMQ_VHOST}",
         )
 
 
