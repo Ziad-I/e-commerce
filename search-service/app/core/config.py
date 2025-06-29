@@ -34,42 +34,7 @@ class Settings(BaseSettings):
     # Logging settings
     LOG_LEVEL: LogLevel = LogLevel.INFO
 
-    # MongoDB settings
-    MONGODB_SCHEME: str
-    MONGODB_USER: Optional[str] = None
-    MONGODB_PASSWORD: Optional[str] = None
-    MONGODB_HOST: str = "localhost"
-    MONGODB_PORT: Optional[int] = 27017
-    MONGODB_DB: str
-    MONGODB_URI: Optional[str] = None
-
     model_config = SettingsConfigDict(env_file=".env")
-
-    @property
-    def mongodb_url(self) -> str:
-        """
-        Return a MongoDB connection URL using yarl.URL.
-
-        Priority:
-            1) MONGODB_URI (as is, if fully specified in env)
-            2) Constructed from parts using yarl.URL
-        """
-        if self.MONGODB_URI:
-            return self.MONGODB_URI
-
-        # Build MongoDB URL using yarl
-        return str(
-            URL.build(
-                scheme=self.MONGODB_SCHEME,
-                user=self.MONGODB_USER,
-                password=self.MONGODB_PASSWORD,
-                host=self.MONGODB_HOST,
-                port=(
-                    self.MONGODB_PORT if self.MONGODB_SCHEME != "mongodb+srv" else None
-                ),
-                path=f"/{self.MONGODB_DB}",
-            )
-        )
 
 
 @lru_cache()

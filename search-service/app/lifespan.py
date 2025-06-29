@@ -2,8 +2,6 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-from app.core.database import close_db, init_db
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -18,8 +16,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     Returns:
         function that actually performs actions.
     """
-    await init_db(app)
     try:
         yield
     finally:
-        await close_db(app)
+        pass
