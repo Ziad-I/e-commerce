@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # Logging settings
     LOG_LEVEL: LogLevel = LogLevel.INFO
 
+    # Elasticsearch settings
+    ELASTICSEARCH_HOST: URL = URL("http://localhost:9200")
+    ELASTICSEARCH_INDEX: str = "products"
+
     model_config = SettingsConfigDict(env_file=".env")
 
 
