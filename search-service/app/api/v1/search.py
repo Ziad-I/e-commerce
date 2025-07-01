@@ -1,9 +1,9 @@
 from typing import Optional
-from elasticsearch import AsyncElasticsearch
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.config import settings
 from app.elastic.dependency import get_elasticsearch
+from app.elastic.elastic import ElasticClient
 from app.schemas.search import SearchResponse
 
 router = APIRouter()
@@ -21,7 +21,7 @@ async def search(
     ),
     limit: int = Query(10, gt=0, le=100, description="Max number of results to return"),
     skip: int = Query(0, ge=0, description="Number of items to skip for pagination"),
-    es: AsyncElasticsearch = Depends(get_elasticsearch),
+    es: ElasticClient = Depends(get_elasticsearch),
 ) -> SearchResponse:
     """
     Search endpoint to query the search service.
@@ -73,7 +73,10 @@ async def search(
         "size": limit,
     }
     try:
-        response = await es.search(index=settings.ELASTICSEARCH_INDEX, body=search_body)
+        response = await es.search(
+            index=settings.ELASTICSEARCH_INDEX,
+            body=search_body,
+        )
         total_results = response["hits"]["total"]["value"]
         items = response["hits"]["hits"]
 
