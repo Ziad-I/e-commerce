@@ -38,7 +38,37 @@ class Settings(BaseSettings):
     ELASTICSEARCH_HOST: URL = URL("http://localhost:9200")
     ELASTICSEARCH_INDEX: str = "products"
 
+    # RabbitMQ settings
+    RABBITMQ_HOST: str = "localhost"
+    RABBITMQ_PORT: int = 5672
+    RABBITMQ_USER: str = "guest"
+    RABBITMQ_PASSWORD: str = "guest"
+    RABBITMQ_VHOST: str = "/"
+    RABBITMQ_URI: Optional[str] = None
+    RABBITMQ_EXCHANGE_NAME: str = "product_exchange"
+
     model_config = SettingsConfigDict(env_file=".env")
+
+    @property
+    def rabbitmq_url(self) -> URL:
+        """
+        Return a RabbitMQ connection URL using yarl.URL.
+
+        Priority:
+            1) RABBITMQ_URI (as is, if fully specified in env)
+            2) Constructed from parts using yarl.URL
+        """
+        if self.RABBITMQ_URI:
+            return self.RABBITMQ_URI
+
+        return URL.build(
+            scheme="amqp",
+            user=self.RABBITMQ_USER,
+            password=self.RABBITMQ_PASSWORD,
+            host=self.RABBITMQ_HOST,
+            port=self.RABBITMQ_PORT,
+            path=f"/{self.RABBITMQ_VHOST}",
+        )
 
 
 @lru_cache()

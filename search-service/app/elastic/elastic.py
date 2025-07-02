@@ -1,5 +1,6 @@
 from functools import lru_cache
 from elasticsearch import AsyncElasticsearch
+from loguru import logger
 
 from app.core.config import settings
 
@@ -47,8 +48,12 @@ class ElasticClient:
         if not self.client:
             raise ValueError("Elasticsearch client is not initialized.")
 
-        resp = await self.client.search(index=index, body=body)
-        return resp
+        try:
+            resp = await self.client.search(index=index, body=body)
+            return resp
+        except Exception as e:
+            logger.error(f"Failed to perform search: {e}")
+            raise ValueError(f"Failed to perform search: {e}")
 
     async def index_product(self, index: str, document: dict):
         """
@@ -64,8 +69,14 @@ class ElasticClient:
         if not self.client:
             raise ValueError("Elasticsearch client is not initialized.")
 
-        resp = await self.client.index(index=index, body=document)
-        return resp
+        try:
+            resp = await self.client.index(
+                index=index, id=document["id"], body=document
+            )
+            return resp
+        except Exception as e:
+            logger.error(f"Failed to index document: {e}")
+            raise ValueError(f"Failed to index document: {e}")
 
     async def delete_product(self, index: str, id: str):
         """
@@ -81,8 +92,12 @@ class ElasticClient:
         if not self.client:
             raise ValueError("Elasticsearch client is not initialized.")
 
-        resp = await self.client.delete(index=index, id=id)
-        return resp
+        try:
+            resp = await self.client.delete(index=index, id=id)
+            return resp
+        except Exception as e:
+            logger.error(f"Failed to delete document with ID {id}: {e}")
+            raise ValueError(f"Failed to delete document with ID {id}: {e}")
 
     async def update_product(self, index: str, id: str, document: dict):
         """
@@ -99,8 +114,12 @@ class ElasticClient:
         if not self.client:
             raise ValueError("Elasticsearch client is not initialized.")
 
-        resp = await self.client.update(index=index, id=id, body={"doc": document})
-        return resp
+        try:
+            resp = await self.client.update(index=index, id=id, body={"doc": document})
+            return resp
+        except Exception as e:
+            logger.error(f"Failed to update document with ID {id}: {e}")
+            raise ValueError(f"Failed to update document with ID {id}: {e}")
 
 
 @lru_cache
