@@ -2,6 +2,8 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
+from app.elastic.lifespan import init_elasticsearch, close_elasticsearch
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -16,7 +18,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     Returns:
         function that actually performs actions.
     """
+    await init_elasticsearch(app)
     try:
         yield
     finally:
-        pass
+        await close_elasticsearch(app)

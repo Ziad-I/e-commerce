@@ -12,9 +12,18 @@ class ElasticClient:
     client: AsyncElasticsearch = None
 
     def __init__(self, hosts: list = None):
-        self.client = AsyncElasticsearch(
-            hosts=hosts,
-        )
+        self.hosts = hosts
+
+    async def connect(self):
+        """
+        Establish a connection to the Elasticsearch cluster.
+        """
+        if not self.client:
+            self.client = AsyncElasticsearch(hosts=self.hosts)
+            try:
+                await self.client.info()
+            except Exception as e:
+                raise ConnectionError(f"Failed to connect to Elasticsearch: {e}")
 
     async def close(self):
         """

@@ -8,7 +8,9 @@ async def init_elasticsearch(app: FastAPI):
     """
     Initialize the Elasticsearch client.
     """
-    app.state.elasticsearch = get_elastic_client()
+    es = get_elastic_client()
+    app.state.elasticsearch = es
+    await es.connect()
 
 
 async def close_elasticsearch(app: FastAPI):
