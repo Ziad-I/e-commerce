@@ -12,15 +12,21 @@ class ElasticClient:
 
     client: AsyncElasticsearch = None
 
-    def __init__(self, hosts: list = None):
+    def __init__(self, hosts: list, user: str, password: str):
         self.hosts = hosts
+        self.user = user
+        self.password = password
 
     async def connect(self):
         """
         Establish a connection to the Elasticsearch cluster.
         """
         if not self.client:
-            self.client = AsyncElasticsearch(hosts=self.hosts)
+            self.client = AsyncElasticsearch(
+                hosts=self.hosts,
+                basic_auth=(self.user, self.password),
+                verify_certs=False,  # Set to True in production
+            )
             try:
                 await self.client.info()
             except Exception as e:
@@ -127,4 +133,8 @@ def get_elastic_client() -> ElasticClient:
     """
     Get a singleton Elasticsearch client instance.
     """
-    return ElasticClient(hosts=[settings.ELASTICSEARCH_HOST])
+    return ElasticClient(
+        hosts=[settings.ELASTICSEARCH_HOST],
+        user=settings.ELASTICSEARCH_USER,
+        password=settings.ELASTICSEARCH_PASSWORD,
+    )

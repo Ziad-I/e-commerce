@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     # Elasticsearch settings
     ELASTICSEARCH_HOST: URL = URL("http://localhost:9200")
     ELASTICSEARCH_INDEX: str = "products"
+    ELASTICSEARCH_USER: str = "elastic"
+    ELASTICSEARCH_PASSWORD: str = "elastic"
 
     # RabbitMQ settings
     RABBITMQ_HOST: str = "localhost"
