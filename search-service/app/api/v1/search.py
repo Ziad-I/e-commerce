@@ -58,12 +58,13 @@ async def search(
         query["bool"]["filter"].append({"range": {"price": price_range}})
 
     if category:
-        query["bool"]["filter"].append({"term": {"category.keyword": category}})
+        query["bool"]["filter"].append({"term": {"category": category}})
 
     raw_sort = sort or "_score:desc"
     field, sep, direction = raw_sort.partition(":")
-    # if no ":", .partition gives direction="" so default below
     direction = direction if direction in ("asc", "desc") else "desc"
+    if field in ["name"]:
+        field = f"{field}.keyword"
 
     sort_field = field if field else "_score"
     search_body = {
