@@ -1,3 +1,4 @@
+from loguru import logger
 from fastapi import FastAPI
 from redis.asyncio import Redis
 
@@ -16,6 +17,7 @@ async def init_redis(app: FastAPI) -> None:
         decode_responses=True,
     )
     app.state.redis = redis
+    logger.info("Connected to Redis.")
 
 
 async def close_redis(app: FastAPI) -> None:
@@ -26,3 +28,4 @@ async def close_redis(app: FastAPI) -> None:
         app (FastAPI): fastAPI application.
     """
     await app.state.redis.close()
+    logger.info("Closed Redis connection.")

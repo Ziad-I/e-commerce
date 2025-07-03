@@ -1,3 +1,4 @@
+from loguru import logger
 from redis.asyncio import Redis
 from app.core.config import settings
 
@@ -26,6 +27,7 @@ async def set_product_cache(redis: Redis, product_id: str, product_data: dict) -
     """
     cache_key = get_product_cache_key(product_id)
     await redis.set(cache_key, product_data, ex=settings.REDIS_CACHE_EXPIRE)
+    logger.info(f"Product {product_id} cached with key {cache_key}.")
 
 
 async def get_product_cache(redis: Redis, product_id: str) -> dict | None:
@@ -56,3 +58,4 @@ async def delete_product_cache(redis: Redis, product_id: str) -> None:
     """
     cache_key = get_product_cache_key(product_id)
     await redis.delete(cache_key)
+    logger.info(f"Product {product_id} cache deleted with key {cache_key}.")

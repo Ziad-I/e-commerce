@@ -1,4 +1,5 @@
 import json
+from loguru import logger
 from functools import lru_cache
 from aio_pika import IncomingMessage, connect_robust, ExchangeType, Message, Queue
 
@@ -46,6 +47,7 @@ class RabbitMQConsumer:
             if op == "create":
                 resp = await es.index_product(
                     index=settings.ELASTICSEARCH_INDEX,
+                    id=product["id"],
                     document=product,
                 )
             elif op == "update":
@@ -60,7 +62,8 @@ class RabbitMQConsumer:
                     id=product["id"],
                 )
             else:
-                raise ValueError(f"Unknown operation: {op}")
+                message.reject()
+                logger.error(f"Unknown operation: {op}")
 
 
 @lru_cache

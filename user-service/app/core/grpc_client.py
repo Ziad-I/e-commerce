@@ -16,6 +16,7 @@ class GrpcClient:
         self._notification_stub = notification_pb2_grpc.NotificationServiceStub(
             self._channel
         )
+        logger.info("Connected to GRPC notification service.")
 
     async def send_email(self, email_request: notification_pb2.SendEmailRequest):
         """Send an email using the notification service."""

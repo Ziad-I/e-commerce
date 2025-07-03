@@ -1,3 +1,4 @@
+from loguru import logger
 import aio_pika
 from fastapi import FastAPI
 from aio_pika import Channel
@@ -40,6 +41,7 @@ async def init_rabbitmq(app: FastAPI) -> None:
 
     app.state.rmq_pool = connection_pool
     app.state.rmq_channel_pool = channel_pool
+    logger.info("Connected to RabbitMQ.")
 
 
 async def close_rabbitmq(app: FastAPI) -> None:
@@ -51,3 +53,4 @@ async def close_rabbitmq(app: FastAPI) -> None:
     """
     await app.state.rmq_channel_pool.close()
     await app.state.rmq_pool.close()
+    logger.info("Closed RabbitMQ connections.")

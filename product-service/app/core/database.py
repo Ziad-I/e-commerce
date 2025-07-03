@@ -1,3 +1,4 @@
+from loguru import logger
 from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
@@ -23,6 +24,7 @@ async def init_db(app: FastAPI) -> None:
     )
 
     app.state.mongo_client = client
+    logger.info("Connected to MongoDB.")
 
 
 async def close_db(app: FastAPI) -> None:
@@ -34,3 +36,4 @@ async def close_db(app: FastAPI) -> None:
     """
     client: AsyncIOMotorClient = app.state.mongo_client
     client.close()
+    logger.info("Closed MongoDB connection.")

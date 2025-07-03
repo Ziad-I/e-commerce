@@ -61,7 +61,7 @@ class ElasticClient:
             logger.error(f"Failed to perform search: {e}")
             raise ValueError(f"Failed to perform search: {e}")
 
-    async def index_product(self, index: str, document: dict):
+    async def index_product(self, index: str, id: str, document: dict):
         """
         Index a product document.
 
@@ -76,9 +76,8 @@ class ElasticClient:
             raise ValueError("Elasticsearch client is not initialized.")
 
         try:
-            resp = await self.client.index(
-                index=index, id=document["id"], body=document
-            )
+            resp = await self.client.index(index=index, id=id, body=document)
+            logger.info(f"Document indexed with ID: {id}")
             return resp
         except Exception as e:
             logger.error(f"Failed to index document: {e}")
@@ -100,6 +99,7 @@ class ElasticClient:
 
         try:
             resp = await self.client.delete(index=index, id=id)
+            logger.info(f"Document deleted with ID: {id}")
             return resp
         except Exception as e:
             logger.error(f"Failed to delete document with ID {id}: {e}")
@@ -122,6 +122,7 @@ class ElasticClient:
 
         try:
             resp = await self.client.update(index=index, id=id, body={"doc": document})
+            logger.info(f"Document updated with ID: {id}")
             return resp
         except Exception as e:
             logger.error(f"Failed to update document with ID {id}: {e}")
