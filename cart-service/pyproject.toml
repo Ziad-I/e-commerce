@@ -1,0 +1,15 @@
+[project]
+name = "cart-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "beanie>=1.30.0",
+    "fastapi[standard]>=0.115.14",
+    "grpcio>=1.73.1",
+    "grpcio-tools>=1.73.1",
+    "loguru>=0.7.3",
+    "pydantic-settings>=2.10.1",
+    "yarl>=1.20.1",
+]
