@@ -1,0 +1,15 @@
+syntax = "proto3"; 
+package price;
+
+
+service PriceService {
+  rpc GetPrice (PriceRequest) returns (PriceResponse);
+}
+
+message PriceRequest {
+  string product_id = 1;
+}
+
+message PriceResponse {
+  float price = 2;
+}
