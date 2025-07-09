@@ -6,7 +6,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import grpc
-from google.protobuf.json_format import MessageToDict
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 from core.config import settings
