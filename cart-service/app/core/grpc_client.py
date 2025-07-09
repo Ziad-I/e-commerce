@@ -9,7 +9,7 @@ from app.proto import price_pb2, price_pb2_grpc
 class GrpcClient:
     def __init__(self):
         self._channel = grpc.aio.insecure_channel(
-            f"{settings.GRPC_HOST}:{settings.GRPC_PORT}"
+            f"{settings.PRICE_SERVICE_GRPC_HOST}:{settings.PRICE_SERVICE_GRPC_PORT}"
         )
         self._price_stub = price_pb2_grpc.PriceServiceStub(self._channel)
         logger.info("Connected to GRPC price service.")

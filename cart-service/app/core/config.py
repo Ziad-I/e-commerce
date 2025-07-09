@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     # Logging settings
     LOG_LEVEL: LogLevel = LogLevel.INFO
 
+    # Price Service gRPC settings
+    PRICE_SERVICE_GRPC_HOST: str = "localhost"
+    PRICE_SERVICE_GRPC_PORT: int = 50051
+
     # MongoDB settings
     MONGODB_SCHEME: str
     MONGODB_USER: Optional[str] = None

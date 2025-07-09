@@ -11,7 +11,7 @@ class GrpcClient:
 
     def __init__(self):
         self._channel = grpc.aio.insecure_channel(
-            f"{settings.GRPC_HOST}:{settings.GRPC_PORT}"
+            f"{settings.NOTIFICATION_SERVICE_GRPC_HOST}:{settings.NOTIFICATION_SERVICE_GRPC_PORT}"
         )
         self._notification_stub = notification_pb2_grpc.NotificationServiceStub(
             self._channel

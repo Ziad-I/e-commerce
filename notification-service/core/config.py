@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     LOG_LEVEL: LogLevel = LogLevel.INFO
 
     # gRPC Settings
-    GRPC_HOST: str = "0.0.0.0"
-    GRPC_PORT: int = 50051
+    NOTIFICATION_SERVICE_GRPC_HOST: str = "0.0.0.0"
+    NOTIFICATION_SERVICE_GRPC_PORT: int = 50051
 
     # SMTP Settings
     SMTP_HOST: str = "smtp.mailtrap.io"

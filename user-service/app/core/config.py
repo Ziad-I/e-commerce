@@ -47,8 +47,8 @@ class Settings(BaseSettings):
     VERIFICATION_TOKEN_LIFETIME_SECONDS: int = 3600 * 24  # 1 day
 
     # GRPC settings
-    GRPC_HOST: str = "localhost"
-    GRPC_PORT: int = 50051
+    NOTIFICATION_SERVICE_GRPC_HOST: str = "localhost"
+    NOTIFICATION_SERVICE_GRPC_PORT: int = 50051
 
     # MongoDB settings
     MONGODB_SCHEME: str

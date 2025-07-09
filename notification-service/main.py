@@ -81,8 +81,8 @@ def serve():
     notification_pb2_grpc.add_NotificationServiceServicer_to_server(
         NotificationService(), server
     )
-    port = settings.GRPC_PORT
-    host = settings.GRPC_HOST
+    port = settings.NOTIFICATION_SERVICE_GRPC_PORT
+    host = settings.NOTIFICATION_SERVICE_GRPC_HOST
     server.add_insecure_port(f"{host}:{port}")
     logger.info(f"gRPC email service listening on {host}:{port}")
     server.start()
