@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: LogLevel = LogLevel.INFO
 
     # Elasticsearch settings
-    ELASTICSEARCH_HOST: URL = URL("http://localhost:9200")
+    ELASTICSEARCH_HOST: str = "http://localhost:9200"
     ELASTICSEARCH_INDEX: str = "products"
     ELASTICSEARCH_USER: str = "elastic"
     ELASTICSEARCH_PASSWORD: str = "elastic"
