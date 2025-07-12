@@ -1,8 +1,7 @@
-import logging
-import os
+import sys
+import signal
 import smtplib
 from concurrent import futures
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import grpc
@@ -85,6 +84,19 @@ def serve():
     server.add_insecure_port(f"{host}:{port}")
     logger.info(f"gRPC email service listening on {host}:{port}")
     server.start()
+
+    def _graceful_shutdown(signum, frame):
+        logger.info(f"Received signal {signum}: initiating graceful shutdown...")
+        # Give up to 5 seconds for existing RPCs to finish.
+        # Returns a grpc.Future; .wait() blocks until done or timeout.
+        server.stop(5).wait()
+        logger.info("Shutdown complete.")
+        sys.exit(0)
+
+    # Intercept SIGINT (Ctrl+C) and SIGTERM
+    signal.signal(signal.SIGINT, _graceful_shutdown)
+    signal.signal(signal.SIGTERM, _graceful_shutdown)
+
     server.wait_for_termination()
 
 
