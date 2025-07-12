@@ -32,5 +32,6 @@ ENV NOTIFICATION_SERVICE_GRPC_HOST=0.0.0.0 \
 
 
 EXPOSE 50051
+WORKDIR /code
 
-CMD ["python", "/code/main.py"]
+CMD ["python", "./main.py"]

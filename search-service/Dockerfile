@@ -30,4 +30,5 @@ ENV PATH="/code/.venv/bin:$PATH"
 # Run the FastAPI application by default
 
 EXPOSE 8000
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-b", "[::]:8000", "/code/app/main:app"]
+WORKDIR /code
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-b", "[::]:8000", "app.main:app"]

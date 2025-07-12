@@ -10,6 +10,7 @@ dependencies = [
     "fastapi[standard]>=0.115.13",
     "grpcio>=1.73.0",
     "grpcio-tools>=1.73.0",
+    "gunicorn>=23.0.0",
     "loguru>=0.7.3",
     "pydantic-settings>=2.10.0",
     "redis>=6.2.0",

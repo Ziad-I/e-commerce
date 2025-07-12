@@ -26,8 +26,11 @@ COPY --from=builder --chown=app:app /code /code
 
 # Place executables in the environment at the front of the path
 ENV PATH="/code/.venv/bin:$PATH"
-
+ENV PRICE_SERVICE_GRPC_HOST="0.0.0.0"
+ENV PRICE_SERVICE_GRPC_PORT="50051"
 # Run the FastAPI application by default
 
 EXPOSE 8000
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-b", "[::]:8000", "/code/app/main:app"]
+EXPOSE 50051
+WORKDIR /code
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-b", "[::]:8000", "app.main:app"]
