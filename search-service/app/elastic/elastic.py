@@ -25,10 +25,9 @@ class ElasticClient:
             self.client = AsyncElasticsearch(
                 hosts=self.hosts,
                 basic_auth=(self.user, self.password),
-                verify_certs=False,  # Set to True in production
             )
             try:
-                await self.client.info()
+                await self.client.ping()
             except Exception as e:
                 raise ConnectionError(f"Failed to connect to Elasticsearch: {e}")
 
