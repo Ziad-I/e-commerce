@@ -117,7 +117,6 @@ def get_auth_refresh_router(
             refresh_strategy,
             user,
             token,
-            refresh_strategy,
             refresh_token,
         )
 
@@ -145,6 +144,7 @@ def get_auth_refresh_router(
         refresh_strategy: Annotated[
             Strategy[models.UP, models.ID], Depends(backend.get_refresh_strategy)
         ],
+        user_token: Annotated[Tuple[models.UP, str], Depends(get_current_user_token)],
         refresh_token: Annotated[str | None, Cookie()],
     ):
         if not refresh_token:
@@ -159,7 +159,9 @@ def get_auth_refresh_router(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=ErrorCode.REFRESH_TOKEN_INVALID,
             )
-        return await backend.refresh(strategy, refresh_strategy, user, refresh_token)
+        return await backend.refresh(
+            strategy, refresh_strategy, user, user_token, refresh_token
+        )
 
     return router
 
