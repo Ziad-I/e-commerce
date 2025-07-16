@@ -1,6 +1,6 @@
 # E-commerce Microservices
 
-This is a sample e-commerce application built with a microservices architecture. The project demonstrates a variety of technologies and patterns for building a scalable and maintainable backend system.
+This is a an e-commerce application built with a microservices architecture. The project demonstrates a variety of technologies and patterns for building a scalable and maintainable backend system.
 
 ## Architecture
 
@@ -12,6 +12,7 @@ The main components are:
 - **Cart Service**: Manages user shopping carts.
 - **Search Service**: Provides product search and filtering capabilities, powered by Elasticsearch.
 - **Notification Service**: Handles sending notifications (e.g., emails) to users. It's a gRPC service.
+- **Nginx**: API gateway and handles auth for other services.
 - **MongoDB**: Primary database for most services.
 - **Redis**: Used for caching.
 - **RabbitMQ**: Message broker for asynchronous tasks.
@@ -26,6 +27,7 @@ The main components are:
 | `cart-service`         | Python/FastAPI     | 8002        | Manages shopping carts.                          |
 | `search-service`       | Python/FastAPI     | 8003        | Provides search functionality over products.     |
 | `notification-service` | Python/gRPC        | 50051       | Sends notifications (e.g., email).               |
+| `Nginx`                | Nginx              | 80          | Acts as an API gateway and handles auth          |
 | `mongo`                | MongoDB            | 27017       | Primary database.                                |
 | `redis`                | Redis              | 6379        | Caching layer for products.                                   |
 | `rabbitmq`             | RabbitMQ           | 15672       | Message broker.                  |
