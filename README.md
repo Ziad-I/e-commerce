@@ -52,7 +52,7 @@ The main components are:
 
 1.  **Clone the repository:**
     ```sh
-    git clone <repository-url>
+    git clone https://github.com/Ziad-I/e-commerce.git
     cd e-commerce-microservices
     ```
 
