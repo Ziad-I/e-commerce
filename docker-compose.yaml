@@ -109,6 +109,19 @@ services:
     networks:
       - ecom_network
 
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - user-service
+      - product-service
+      - cart-service
+      - search-service
+    volumes:
+      - nginx_cache:/var/cache/nginx
+    networks:
+      - ecom_network
 
   mongo:
     image: mongo:latest
@@ -179,6 +192,7 @@ services:
 
 
 volumes:
+  nginx_cache:
   mongo_data:
   redis_data:
   rabbitmq_data:
