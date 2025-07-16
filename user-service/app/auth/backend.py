@@ -58,6 +58,10 @@ class AuthenticationBackendRefresh(
     ) -> Response:
         try:
             await strategy.destroy_token(token, user)
+        except StrategyDestroyNotSupportedError:
+            pass
+
+        try:
             await refresh_strategy.destroy_token(refresh_token, user)
         except StrategyDestroyNotSupportedError:
             pass
@@ -80,6 +84,10 @@ class AuthenticationBackendRefresh(
     ) -> Response:
         try:
             await strategy.destroy_token(user_token, user)
+        except StrategyDestroyNotSupportedError:
+            pass
+
+        try:
             await refresh_strategy.destroy_token(refresh_token, user)
         except StrategyDestroyNotSupportedError:
             pass
