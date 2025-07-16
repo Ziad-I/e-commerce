@@ -94,7 +94,7 @@ class AuthenticationBackendRefresh(
 
 
 bearer_transport_refresh = BearerTransportRefresh(
-    tokenUrl=f"{settings.API_V1_STR}/auth/jwt/login"
+    tokenUrl=f"{settings.API_V1_STR}/users/auth/jwt/login"
 )
 
 cookie_transport_refresh = CookieTransportRefresh(
