@@ -1,6 +1,6 @@
 FROM nginx:alpine
 
-RUN apk add --no-cache nginx-mod-http-auth-jwt || true
+RUN apk add --no-cache nginx-mod-http-auth-request || true
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
