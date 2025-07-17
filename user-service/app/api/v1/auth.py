@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead
@@ -32,6 +32,11 @@ router.include_router(
 
 
 @router.post("/validate", tags=["Auth"])
-async def validate_user(user: User = Depends(current_active_user)) -> UserRead:
-    """Endpoint to validate the current active user."""
+async def validate_user(
+    request: Request, user: User = Depends(current_active_user)
+) -> UserRead:
+    """Endpoint to validate the current active user, adding user details to the request headers."""
+    request.headers["X-User-Id"] = str(user.id)
+    request.headers["X-User-Email"] = user.email
+    request.headers["X-User-Verified"] = str(user.is_verified).lower()
     return user
