@@ -11,6 +11,8 @@ dependencies = [
     "grpcio-tools>=1.73.1",
     "gunicorn>=23.0.0",
     "loguru>=0.7.3",
+    "prometheus-client>=0.22.1",
+    "prometheus-fastapi-instrumentator>=7.1.0",
     "pydantic-settings>=2.10.1",
     "yarl>=1.20.1",
 ]
