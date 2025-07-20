@@ -190,6 +190,33 @@ services:
       start_period: 60s
 
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - user-service
+      - product-service
+      - cart-service
+      - search-service
+    networks:
+      - ecom_network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=secret_password
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - ecom_network
 
 volumes:
   nginx_cache:
@@ -197,6 +224,8 @@ volumes:
   redis_data:
   rabbitmq_data:
   es_data:
+  grafana_data:
+
 
 networks:
   ecom_network:
