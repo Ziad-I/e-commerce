@@ -1,0 +1,87 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_ACCOUNT_ID: "123456789012" # replace or set in CodeBuild env vars
+    AWS_DEFAULT_REGION: "eu-central-1" # replace or set in CodeBuild env vars
+    ECR_REPOSITORY_USER_SERVICE: "ecom/user-service"
+    ECR_REPOSITORY_NOTIFICATION_SERVICE: "ecom/notification-service"
+    ECR_REPOSITORY_PRODUCT_SERVICE: "ecom/product-service"
+    ECR_REPOSITORY_CART_SERVICE: "ecom/cart-service"
+    ECR_REPOSITORY_SEARCH_SERVICE: "ecom/search-service"
+    ECR_REPOSITORY_NGINX: "ecom/nginx"
+
+phases:
+  install:
+    commands:
+      - echo "Checking dependencies..."
+      - docker --version
+      - docker info || true
+
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws --version
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - echo "IMAGE_TAG=$IMAGE_TAG"
+
+  build:
+    commands:
+      - echo "Building user-service..."
+      - docker build -f user-service/Dockerfile -t $ECR_REPOSITORY_USER_SERVICE:latest ./user-service
+      - docker tag $ECR_REPOSITORY_USER_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_USER_SERVICE:latest
+      - docker tag $ECR_REPOSITORY_USER_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_USER_SERVICE:$IMAGE_TAG
+
+      - echo "Building notification-service..."
+      - docker build -f notification-service/Dockerfile -t $ECR_REPOSITORY_NOTIFICATION_SERVICE:latest ./notification-service
+      - docker tag $ECR_REPOSITORY_NOTIFICATION_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NOTIFICATION_SERVICE:latest
+      - docker tag $ECR_REPOSITORY_NOTIFICATION_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NOTIFICATION_SERVICE:$IMAGE_TAG
+
+      - echo "Building product-service..."
+      - docker build -f product-service/Dockerfile -t $ECR_REPOSITORY_PRODUCT_SERVICE:latest ./product-service
+      - docker tag $ECR_REPOSITORY_PRODUCT_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_PRODUCT_SERVICE:latest
+      - docker tag $ECR_REPOSITORY_PRODUCT_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_PRODUCT_SERVICE:$IMAGE_TAG
+
+      - echo "Building cart-service..."
+      - docker build -f cart-service/Dockerfile -t $ECR_REPOSITORY_CART_SERVICE:latest ./cart-service
+      - docker tag $ECR_REPOSITORY_CART_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_CART_SERVICE:latest
+      - docker tag $ECR_REPOSITORY_CART_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_CART_SERVICE:$IMAGE_TAG
+
+      - echo "Building search-service..."
+      - docker build -f search-service/Dockerfile -t $ECR_REPOSITORY_SEARCH_SERVICE:latest ./search-service
+      - docker tag $ECR_REPOSITORY_SEARCH_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_SEARCH_SERVICE:latest
+      - docker tag $ECR_REPOSITORY_SEARCH_SERVICE:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_SEARCH_SERVICE:$IMAGE_TAG
+
+      - echo "Building nginx..."
+      - docker build -f nginx/Dockerfile -t $ECR_REPOSITORY_NGINX:latest ./nginx
+      - docker tag $ECR_REPOSITORY_NGINX:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
+      - docker tag $ECR_REPOSITORY_NGINX:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo "Pushing user-service..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_USER_SERVICE:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_USER_SERVICE:$IMAGE_TAG
+
+      - echo "Pushing notification-service..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NOTIFICATION_SERVICE:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NOTIFICATION_SERVICE:$IMAGE_TAG
+
+      - echo "Pushing product-service..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_PRODUCT_SERVICE:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_PRODUCT_SERVICE:$IMAGE_TAG
+
+      - echo "Pushing cart-service..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_CART_SERVICE:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_CART_SERVICE:$IMAGE_TAG
+
+      - echo "Pushing search-service..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_SEARCH_SERVICE:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_SEARCH_SERVICE:$IMAGE_TAG
+
+      - echo "Pushing nginx..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:$IMAGE_TAG
+
+      - echo "All images pushed successfully."
