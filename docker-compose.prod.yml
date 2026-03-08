@@ -1,0 +1,276 @@
+version: "3.8"
+
+services:
+  user-service:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_USER_SERVICE}:${TAG:-latest}
+    restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    ports:
+      - "8000:8000"
+    depends_on:
+      mongo:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    environment:
+      - MONGODB_SCHEME=mongodb
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - NOTIFICATION_SERVICE_GRPC_HOST=notification-service
+      - NOTIFICATION_SERVICE_GRPC_PORT=50051
+    env_file:
+      - path: ./user-service/.env
+        required: true
+    networks:
+      - ecom_network
+
+  notification-service:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_NOTIFICATION_SERVICE}:${TAG:-latest}
+    restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    ports:
+      - "50051:50051"
+    environment:
+      - NOTIFICATION_SERVICE_GRPC_HOST=0.0.0.0
+      - NOTIFICATION_SERVICE_GRPC_PORT=50051
+    env_file:
+      - path: ./notification-service/.env
+        required: true
+    networks:
+      - ecom_network
+
+  product-service:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_PRODUCT_SERVICE}:${TAG:-latest}
+    restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    ports:
+      - "8001:8000"
+      - "50052:50051"
+    depends_on:
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - MONGODB_SCHEME=mongodb
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_USER=guest
+      - RABBITMQ_VHOST=vhost
+      - PRICE_SERVICE_GRPC_HOST=product-service
+      - PRICE_SERVICE_GRPC_PORT=50052
+    env_file:
+      - path: ./product-service/.env
+        required: true
+    networks:
+      - ecom_network
+
+  cart-service:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_CART_SERVICE}:${TAG:-latest}
+    restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    ports:
+      - "8002:8000"
+    depends_on:
+      mongo:
+        condition: service_started
+      product-service:
+        condition: service_started
+    environment:
+      - MONGODB_SCHEME=mongodb
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - PRICE_SERVICE_GRPC_HOST=product-service
+      - PRICE_SERVICE_GRPC_PORT=50052
+    env_file:
+      - path: ./cart-service/.env
+        required: true
+    networks:
+      - ecom_network
+
+  search-service:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_SEARCH_SERVICE}:${TAG:-latest}
+    restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    ports:
+      - "8003:8000"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+      - ELASTICSEARCH_USER=elastic
+      - ELASTICSEARCH_PASSWORD=my_password
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_USER=guest
+      - RABBITMQ_VHOST=vhost
+    env_file:
+      - path: ./search-service/.env
+        required: true
+    networks:
+      - ecom_network
+
+  nginx:
+    image: ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY_NGINX}:${TAG:-latest}
+    restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    ports:
+      - "80:80"
+    depends_on:
+      - user-service
+      - product-service
+      - cart-service
+      - search-service
+    volumes:
+      - nginx_cache:/var/cache/nginx
+    networks:
+      - ecom_network
+
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ecom_network
+
+  redis:
+    image: redis:8.0-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecom_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  rabbitmq:
+    image: rabbitmq:4.1-management-alpine
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=vhost
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/
+    networks:
+      - ecom_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=my_password
+      - ELASTIC_USER=elastic
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - ecom_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -u elastic:my_password --silent --fail localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - user-service
+      - product-service
+      - cart-service
+      - search-service
+    networks:
+      - ecom_network
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=secret_password
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - ecom_network
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - helper:/go/bin
+      - /home/ubuntu/.docker/config.json:/config.json:ro
+    environment:
+      - HOME=/
+      - PATH=$PATH:/go/bin
+    command:
+      - --interval
+      - "30"
+      - --cleanup
+      - --label-enable
+      - --include-restarting
+      - --run-once=false
+    networks:
+      - ecom_network
+
+volumes:
+  nginx_cache:
+  mongo_data:
+  redis_data:
+  rabbitmq_data:
+  es_data:
+  grafana_data:
+  helper:
+    external: true
+
+networks:
+  ecom_network:
+    driver: bridge
